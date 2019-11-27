@@ -11,7 +11,6 @@ dataSources:
     source:
       address: '0xb3901d04cf645747b99dbbe8f2ee9cb41a89cebf' # hub.iexec.eth
       abi: IexecHub
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -55,7 +54,6 @@ dataSources:
     source:
       address: '0xe39859ef4ca86af6cbef798d2b805bf1a6499e8f' # clerk.iexec.eth
       abi: IexecClerk
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -120,7 +118,6 @@ dataSources:
     source:
       address: '0xd4945a24566abf3517f81230ff89820c3dd39e33' # apps.iexec.eth
       abi: AppRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -143,7 +140,6 @@ dataSources:
     source:
       address: '0x1d7b69669e5781c3bce590da74ecf88da5e12a9d' # datasets.iexec.eth
       abi: DatasetRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -166,7 +162,6 @@ dataSources:
     source:
       address: '0x3f4c18c322064576c048b1284b700288ffef126b' # workerpool.iexec.eth
       abi: WorkerpoolRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
