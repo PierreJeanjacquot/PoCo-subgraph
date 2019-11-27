@@ -7,11 +7,10 @@ dataSources:
 # ================================= IexecHub ==================================
   - name: IexecHub
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
-      address: '0x1383c16c927c4A853684d1a9c676986f25E22111' # hub.iexec.eth
+      address: '0xD5125A2d186E5266dA60e958043d32fE6fBA662f' # hub.iexec.eth
       abi: IexecHub
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -51,11 +50,10 @@ dataSources:
 # ================================ IexecClerk =================================
   - name: IexecClerk
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
-      address: '0x3780d894DB2cB84135bBa025ba9ef0Ac518DC311' # clerk.iexec.eth
+      address: '0xc30bF7a45BdF5411c7Da683F0D2E6455607c9f15' # clerk.iexec.eth
       abi: IexecClerk
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -116,11 +114,10 @@ dataSources:
 # =============================== App registry ================================
   - name: AppRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
-      address: '0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29' # apps.iexec.eth
+      address: '0x6BC8657E0697728482418bD1a809598785C9E970' # apps.iexec.eth
       abi: AppRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -139,11 +136,10 @@ dataSources:
 # ============================= Dataset registry ==============================
   - name: DatasetRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
-      address: '0xC28F63b8379087F02E09da1BC62148874E730Ffd' # datasets.iexec.eth
+      address: '0x0BfDa3f68D836A99761205B20f6fa1C673bbF6Dd' # datasets.iexec.eth
       abi: DatasetRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -162,11 +158,10 @@ dataSources:
 # ============================ Workerpool registry ============================
   - name: WorkerpoolRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
-      address: '0xc398052563469e6Ea7C442aBf124aADE7ec2CC92' # workerpool.iexec.eth
+      address: '0x7E5459dC143cd51F7e1eCb644707Ee64aF24b6a6' # workerpool.iexec.eth
       abi: WorkerpoolRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -185,7 +180,7 @@ dataSources:
 templates:
   - name: Workerpool
     kind: ethereum/contract
-    network: mainnet
+    network: bellecour
     source:
       abi: Workerpool
     mapping:
