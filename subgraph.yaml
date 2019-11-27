@@ -7,11 +7,10 @@ dataSources:
 # ================================= IexecHub ==================================
   - name: IexecHub
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
-      address: '0x1383c16c927c4A853684d1a9c676986f25E22111' # hub.iexec.eth
+      address: '0x4735e4BC6B143099fDF14224a82429aA34ba4d04' # hub.iexec.eth
       abi: IexecHub
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -51,11 +50,10 @@ dataSources:
 # ================================ IexecClerk =================================
   - name: IexecClerk
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
-      address: '0x3780d894DB2cB84135bBa025ba9ef0Ac518DC311' # clerk.iexec.eth
+      address: '0xfD794e6958a46ecFdf01d58c6B3D787ECb99818f' # clerk.iexec.eth
       abi: IexecClerk
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -116,11 +114,10 @@ dataSources:
 # =============================== App registry ================================
   - name: AppRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
-      address: '0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29' # apps.iexec.eth
+      address: '0x65313a6EDD5fF1E7d8C6cb235C09A82DbC159798' # apps.iexec.eth
       abi: AppRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -139,11 +136,10 @@ dataSources:
 # ============================= Dataset registry ==============================
   - name: DatasetRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
-      address: '0xC28F63b8379087F02E09da1BC62148874E730Ffd' # datasets.iexec.eth
+      address: '0x4D9080a52F13f6a1794Fd849Adb6e77DF35EBfA5' # datasets.iexec.eth
       abi: DatasetRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -162,11 +158,10 @@ dataSources:
 # ============================ Workerpool registry ============================
   - name: WorkerpoolRegistry
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
-      address: '0xc398052563469e6Ea7C442aBf124aADE7ec2CC92' # workerpool.iexec.eth
+      address: '0x1Cae59C7745A61dD37CD17f174745959D0f3f400' # workerpool.iexec.eth
       abi: WorkerpoolRegistry
-      startBlock: 7688000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -185,7 +180,7 @@ dataSources:
 templates:
   - name: Workerpool
     kind: ethereum/contract
-    network: mainnet
+    network: viviani
     source:
       abi: Workerpool
     mapping:
