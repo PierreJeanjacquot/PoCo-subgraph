@@ -33,6 +33,10 @@ import {
 	toETH,
 } from './utils'
 
+const TIMELOCK_ADMIN_ROLE = "0x5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5";
+const PROPOSER_ROLE       = "0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1";
+const EXECUTOR_ROLE       = "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63";
+
 export function handleCallScheduled(event: CallScheduledEvent): void
 {
 	let operation         = new Operation(event.params.id.toHex())
@@ -101,9 +105,9 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 	role.save()
 
 	let account           = new Account(event.params.account.toHex())
-	if (role.id == "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775") account.isAdmin    = true
-	if (role.id == "0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1") account.isProposer = true
-	if (role.id == "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63") account.isExecutor = true
+	if (role.id == TIMELOCK_ADMIN_ROLE) account.isAdmin    = true
+	if (role.id == PROPOSER_ROLE)       account.isProposer = true
+	if (role.id == EXECUTOR_ROLE)       account.isExecutor = true
 	account.save()
 
 	let sender            = new Account(event.params.sender.toHex())
