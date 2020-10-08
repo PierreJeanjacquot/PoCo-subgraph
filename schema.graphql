@@ -1,473 +1,145 @@
-# Copyright 2020 IEXEC BLOCKCHAIN TECH
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 type Transaction @entity {
 	id:                           ID!
-	from:                         Account
-	to:                           Account
-	value:                        BigInt!
-	gasUsed:                      BigInt!
-	gasPrice:                     BigInt!
 	timestamp:                    BigInt!
 	blockNumber:                  BigInt!
-	accountEvents:                [AccountEvent!]! @derivedFrom(field: "transaction")
-	taskEvents:                   [TaskEvent!]! @derivedFrom(field: "transaction")
-	workerpoolEvents:             [WorkerpoolEvent!]! @derivedFrom(field: "transaction")
-	ressourceTransferEvent:       [RessourceTransferEvent!]! @derivedFrom(field: "transaction")
-	erc1538Events:                [ERC1538Event!]! @derivedFrom(field: "transaction")
+	events:                       [Event!]! @derivedFrom(field: "transaction")
+	operationEvents:              [OperationEvent!]! @derivedFrom(field: "transaction")
+	accessControlEvents:          [AccessControlEvent!]! @derivedFrom(field: "transaction")
 }
 
-# ================================== ERC1538 ==================================
-type ERC1538Module @entity {
-	id:                           ID!
-	functions:                    [ERC1538Function!]! @derivedFrom(field: "module")
-}
-
-type ERC1538Function @entity {
-	id:                           ID!
-	module:                       ERC1538Module!
-	name:                         String!
-	updates:                      [ERC1538FunctionUpdate!]! @derivedFrom(field: "functionId")
-}
-
-interface ERC1538Event {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-}
-
-type ERC1538FunctionUpdate implements ERC1538Event @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	functionId:                   ERC1538Function!
-	oldmodule:                    ERC1538Module!
-	newmodule:                    ERC1538Module!
-}
-
-type ERC1538CommitMessage implements ERC1538Event @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	message:                      String!
-}
-
-# ============================== Address objects ==============================
 type Account @entity {
 	id:                           ID!
-	balance:                      BigDecimal!
-	frozen:                       BigDecimal!
-	score:                        BigInt!
-	transfersFrom:                [Transfer!]! @derivedFrom(field: "from")
-	transfersTo:                  [Transfer!]! @derivedFrom(field: "to")
-	events:                       [AccountEvent!]! @derivedFrom(field: "account")
-	contributions:                [Contribution!]! @derivedFrom(field: "worker")
-	apps:                         [App!]! @derivedFrom(field: "owner")
-	datasets:                     [Dataset!]! @derivedFrom(field: "owner")
-	workerpools:                  [Workerpool!]! @derivedFrom(field: "owner")
-	dealRequester:                [Deal!]! @derivedFrom(field: "requester")
-	dealBeneficiary:              [Deal!]! @derivedFrom(field: "beneficiary")
-	dealCallback:                 [Deal!]! @derivedFrom(field: "callback")
-	orderRequester:               [RequestOrder!]! @derivedFrom(field: "requester")
-	orderBeneficiary:             [RequestOrder!]! @derivedFrom(field: "beneficiary")
-	orderCallback:                [RequestOrder!]! @derivedFrom(field: "callback")
-	transactions:                 [Transaction!]! @derivedFrom(field: "from")
+	isAdmin:                      Boolean
+	isProposer:                   Boolean
+	isExecutor:                   Boolean
+	roles:                        [AccessControlPair!]! @derivedFrom(field: "account")
+	events:                       [AccessControlEvent!]! @derivedFrom(field: "account")
 }
 
-# ============================== Token movements ==============================
-type Transfer @entity {
+type Role @entity {
 	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	from:                         Account!
-	to:                           Account!
-	value:                        BigDecimal!
+	admin:                        Role
+	members:                      [AccessControlPair!]! @derivedFrom(field: "role")
+	events:                       [AccessControlEvent!]! @derivedFrom(field: "role")
 }
 
-interface AccountEvent {
+type AccessControlPair @entity {
 	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
 	account:                      Account!
+	role:                         Role!
 }
 
-type Reward implements AccountEvent @entity {
+type Target @entity {
 	id:                           ID!
-	transaction:                  Transaction!
+	calls:                        [Call!]! @derivedFrom(field: "target")
+}
+
+enum OperationStatus {
+	SCHEDULED
+	EXECUTED
+	CANCELED
+}
+
+type Operation @entity
+{
+	id:                           ID!
+	status:                       OperationStatus!
+	delay:                        BigInt!
 	timestamp:                    BigInt!
-	account:                      Account!
-	value:                        BigDecimal!
-	task:                         Task!
+	predecessor:                  Operation
+	calls:                        [Call!]! @derivedFrom(field: "operation")
+	events:                       [OperationEvent!]! @derivedFrom(field: "operation")
 }
 
-type Seize implements AccountEvent @entity {
+type Call @entity
+{
 	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	account:                      Account!
-	value:                        BigDecimal!
-	task:                         Task!
-}
-
-type Lock implements AccountEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	account:                      Account!
-	value:                        BigDecimal!
-}
-
-type Unlock implements AccountEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	account:                      Account!
-	value:                        BigDecimal!
-}
-
-type AccurateContribution implements AccountEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	account:                      Account!
-	contribution:                 Contribution!
-	score:                        BigInt!
-}
-
-type FaultyContribution implements AccountEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	account:                      Account!
-	contribution:                 Contribution!
-	score:                        BigInt!
-}
-
-# ================================ Ressources =================================
-interface Ressource {
-	id:                           ID!
-	owner:                        Account!
-}
-
-type App implements Ressource @entity {
-	id:                           ID!
-	owner:                        Account!
-	name:                         String!
-	type:                         String!
-	multiaddr:                    Bytes!
-	checksum:                     Bytes!
-	mrenclave:                    Bytes!
-	usages:                       [Deal!]! @derivedFrom(field: "app")
-	orders:                       [AppOrder!]! @derivedFrom(field: "app")
-	transfers:                    [AppTransfer!]! @derivedFrom(field: "app")
-}
-
-type Dataset implements Ressource @entity {
-	id:                           ID!
-	owner:                        Account!
-	name:                         String!
-	multiaddr:                    Bytes!
-	checksum:                     Bytes!
-	usages:                       [Deal!]! @derivedFrom(field: "dataset")
-	orders:                       [DatasetOrder!]! @derivedFrom(field: "dataset")
-	transfers:                    [DatasetTransfer!]! @derivedFrom(field: "dataset")
-}
-
-type Workerpool implements Ressource @entity {
-	id:                           ID!
-	owner:                        Account!
-	description:                  String!
-	workerStakeRatio:             BigInt!
-	schedulerRewardRatio:         BigInt!
-	usages:                       [Deal!]! @derivedFrom(field: "workerpool")
-	orders:                       [WorkerpoolOrder!]! @derivedFrom(field: "workerpool")
-	events:                       [WorkerpoolEvent!]! @derivedFrom(field: "workerpool")
-	transfers:                    [WorkerpoolTransfer!]! @derivedFrom(field: "workerpool")
-}
-
-# ============================= Ressources Events =============================
-interface RessourceTransferEvent {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	from:                         Account!
-	to:                           Account!
-}
-
-type AppTransfer implements RessourceTransferEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	app:                          App!
-	from:                         Account!
-	to:                           Account!
-}
-
-type DatasetTransfer implements RessourceTransferEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	dataset:                      Dataset!
-	from:                         Account!
-	to:                           Account!
-}
-
-type WorkerpoolTransfer implements RessourceTransferEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	workerpool:                   Workerpool!
-	from:                         Account!
-	to:                           Account!
-}
-
-# ============================= Workerpool events =============================
-interface WorkerpoolEvent {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	workerpool:                   Workerpool!
-}
-
-type SchedulerNotice implements WorkerpoolEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	workerpool:                   Workerpool!
-	deal:                         Deal!
-}
-
-type PolicyUpdate implements WorkerpoolEvent @entity {
-	id:                           ID!
-	transaction:                  Transaction!
-	timestamp:                    BigInt!
-	workerpool:                   Workerpool!
-	oldWorkerStakeRatio:          BigInt!
-	newWorkerStakeRatio:          BigInt!
-	oldSchedulerRewardRatio:      BigInt!
-	newSchedulerRewardRatio:      BigInt!
-}
-
-# ================================== Orders ===================================
-type AppOrder @entity {
-	id:                           ID!
-	app:                          App!
-	appprice:                     BigDecimal!
-	volume:                       BigInt
-	tag:                          Bytes
-	datasetrestrict:              Bytes
-	workerpoolrestrict:           Bytes
-	requesterrestrict:            Bytes
-	salt:                         Bytes
-	sign:                         Bytes # could be null
-	deals:                        [Deal!]! @derivedFrom(field: "apporder")
-}
-
-type DatasetOrder @entity {
-	id:                           ID!
-	dataset:                      Dataset!
-	datasetprice:                 BigDecimal!
-	volume:                       BigInt
-	tag:                          Bytes
-	apprestrict:                  Bytes
-	workerpoolrestrict:           Bytes
-	requesterrestrict:            Bytes
-	salt:                         Bytes
-	sign:                         Bytes # could be null
-	deals:                        [Deal!]! @derivedFrom(field: "datasetorder")
-}
-
-type WorkerpoolOrder @entity {
-	id:                           ID!
-	workerpool:                   Workerpool!
-	workerpoolprice:              BigDecimal!
-	volume:                       BigInt
-	tag:                          Bytes
-	category:                     Category
-	trust:                        BigInt
-	apprestrict:                  Bytes
-	datasetrestrict:              Bytes
-	requesterrestrict:            Bytes
-	salt:                         Bytes
-	sign:                         Bytes # could be null
-	deals:                        [Deal!]! @derivedFrom(field: "workerpoolorder")
-}
-
-type RequestOrder @entity {
-	id:                           ID!
-	app:                          App
-	appmaxprice:                  BigDecimal
-	dataset:                      Dataset # could be null or whitelist
-	datasetmaxprice:              BigDecimal
-	workerpool:                   Workerpool # could be null or whitelist
-	workerpoolmaxprice:           BigDecimal
-	requester:                    Account!
-	volume:                       BigInt
-	tag:                          Bytes
-	category:                     Category
-	trust:                        BigInt
-	beneficiary:                  Account
-	callback:                     Account
-	params:                       String
-	salt:                         Bytes
-	sign:                         Bytes # could be null
-	deals:                        [Deal!]! @derivedFrom(field: "requestorder")
-}
-
-# =================================== PoCo ====================================
-type Category @entity {
-	id:                           ID!
-	name:                         String!
-	description:                  String!
-	workClockTimeRef:             BigInt!
-	deals:                        [Deal!]! @derivedFrom(field: "category")
-}
-
-type Deal @entity {
-	id:                           ID!
-	tasks:                        [Task!]! @derivedFrom(field: "deal")
-	app:                          App!
-	appOwner:                     Account!
-	appPrice:                     BigDecimal!
-	dataset:                      Dataset # can be null
-	datasetOwner:                 Account!
-	datasetPrice:                 BigDecimal!
-	workerpool:                   Workerpool!
-	workerpoolOwner:              Account!
-	workerpoolPrice:              BigDecimal!
-	trust:                        BigInt!
-	category:                     Category!
-	tag:                          Bytes!
-	requester:                    Account!
-	beneficiary:                  Account!
-	callback:                     Account!
-	params:                       String!
-	startTime:                    BigInt!
-	botFirst:                     BigInt!
-	botSize:                      BigInt!
-	workerStake:                  BigInt!
-	schedulerRewardRatio:         BigInt!
-	apporder:                     AppOrder # todo: not available if not broadcasted
-	datasetorder:                 DatasetOrder # todo: not available if not broadcasted
-	workerpoolorder:              WorkerpoolOrder # todo: not available if not broadcasted
-	requestorder:                 RequestOrder # todo: not available if not broadcasted
-}
-
-enum TaskStatus {
-	UNSET
-	ACTIVE
-	REVEALING
-	COMPLETED
-	FAILLED
-}
-
-type Task @entity {
-	id:                           ID!
-	status:                       TaskStatus!
-	deal:                         Deal!
+	operation:                    Operation!
 	index:                        BigInt!
-	contributions:                [Contribution!]!
-	consensus:                    Bytes # set on consensus reached
-	resultDigest:                 Bytes # set on reveal
-	results:                      Bytes # set on finalized
-	resultsCallback:              Bytes # set on finalized
-	contributionDeadline:         BigInt!
-	revealDeadline:               BigInt # set on consensus reached
-	finalDeadline:                BigInt!
-	rewards:                      [Reward!]! @derivedFrom(field: "task")
-	seizes:                       [Seize!]! @derivedFrom(field: "task")
-	events:                       [TaskEvent!]! @derivedFrom(field: "task")
+	target:                       Target!
+	value:                        BigDecimal!
+	data:                         Bytes!
+	scheduled:                    [Scheduled!]! @derivedFrom(field: "call")
+	executed:                     [Executed!]! @derivedFrom(field: "call")
 }
 
-enum ContributionStatus {
-	UNSET
-	CONTRIBUTED
-	PROVED
-	REJECTED
-}
-
-type Contribution @entity {
-	id:                           ID!
-	status:                       ContributionStatus!
-	timestamp:                    Int!
-	task:                         Task!
-	worker:                       Account!
-	hash:                         Bytes!
-	seal:                         Bytes!
-	challenge:                    Bytes!
-}
-
-# ============================ PoCo contributions =============================
-interface TaskEvent {
+interface Event
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
 }
 
-type TaskInitialize implements TaskEvent @entity {
+
+type MinDelayChange implements Event @entity
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
-	workerpool:                   Workerpool!
+	mindelay:                     BigInt!
 }
 
-type TaskContribute implements TaskEvent @entity {
+interface OperationEvent
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
-	worker:                       Account!
-	hash:                         Bytes!
+	operation:                    Operation!
 }
 
-type TaskConsensus implements TaskEvent @entity {
+type Scheduled implements OperationEvent @entity
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
-	consensus:                    Bytes!
+	operation:                    Operation!
+	call:                         Call!
 }
 
-type TaskReveal implements TaskEvent @entity {
+type Executed implements OperationEvent @entity
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
-	worker:                       Account!
-	digest:                       Bytes!
+	operation:                    Operation!
+	call:                         Call!
 }
 
-type TaskReopen implements TaskEvent @entity {
+type Cancelled implements OperationEvent @entity
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
+	operation:                    Operation!
 }
 
-type TaskFinalize implements TaskEvent @entity {
+interface AccessControlEvent
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
-	results:                      Bytes!
+	account:                      Account!
+	role:                         Role!
 }
 
-type TaskClaimed implements TaskEvent @entity {
+type RoleGranted implements AccessControlEvent @entity
+{
 	id:                           ID!
 	transaction:                  Transaction!
 	timestamp:                    BigInt!
-	task:                         Task!
+	account:                      Account!
+	role:                         Role!
+	sender:                       Account!
 }
+
+type RoleRevoked implements AccessControlEvent @entity
+{
+	id:                           ID!
+	transaction:                  Transaction!
+	timestamp:                    BigInt!
+	account:                      Account!
+	role:                         Role!
+	sender:                       Account!
+}
+
+# RoleAdminChanged
