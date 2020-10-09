@@ -98,6 +98,7 @@ export function handleMinDelayChange(event: MinDelayChangeEvent): void {
 	ev.transaction        = logTransaction(event).id
 	ev.timestamp          = event.block.timestamp
 	ev.mindelay           = event.params.newDuration
+	ev.save()
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
